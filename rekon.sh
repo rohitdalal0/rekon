@@ -209,9 +209,10 @@ main() {
         mkdir $home_dir/port_scans
         mkdir $home_dir/services_enum
         while IFS= read -r line; do
-            rustscan -a "$line" --range 1-65535 -b 5000 --accessible -- -A -sVC -oG "$home_dir/port_scans/$line.gnmap"
+            url=$(echo "$line" | awk -F // '{ print $2 }')
+            rustscan -a "$url" --range 1-65535 -b 5000 --accessible -- -A -sVC -oG "$home_dir/port_scans/$url.gnmap"
             ## Brute force default credentials
-            brutespray -f "$home_dir/port_scans/$line.gnmap" -t 100 -T 2 -U "$user_list" -P "$pass_list" -q -o $home_dir/services_enum
+            brutespray -f "$home_dir/port_scans/$url.gnmap" -t 100 -T 2 -U "$user_list" -P "$pass_list" -q -o $home_dir/services_enum
         done < "$target"
     fi
 }
